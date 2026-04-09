@@ -1,0 +1,82 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  SECRETARY
+  LAWYER
+}
+
+model User {
+  id        String   @id @default(uuid())
+  name      String
+  email     String   @unique
+  password  String
+  role      UserRole
+  isActive  Boolean  @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Client {
+  id            String      @id @default(uuid())
+  fullName      String
+  cpf           String      @unique
+  rg            String?
+  email         String?
+  phone         String?
+  profession    String?
+  maritalStatus String?
+  zipCode       String?
+  street        String?
+  number        String?
+  complement    String?
+  neighborhood  String?
+  city          String?
+  state         String?
+  cases         LegalCase[]
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+}
+
+model LegalCase {
+  id          String              @id @default(uuid())
+  clientId    String
+  title       String
+  actionType  String
+  description String?
+  status      String?
+  snapshot    CaseClientSnapshot?
+  createdAt   DateTime            @default(now())
+  updatedAt   DateTime            @updatedAt
+
+  client Client @relation(fields: [clientId], references: [id], onDelete: Cascade)
+}
+
+model CaseClientSnapshot {
+  id            String    @id @default(uuid())
+  caseId         String    @unique
+  fullName       String
+  cpf            String
+  rg             String?
+  email          String?
+  phone          String?
+  profession     String?
+  maritalStatus  String?
+  zipCode        String?
+  street         String?
+  number         String?
+  complement     String?
+  neighborhood   String?
+  city           String?
+  state          String?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+
+  case LegalCase @relation(fields: [caseId], references: [id], onDelete: Cascade)
+}

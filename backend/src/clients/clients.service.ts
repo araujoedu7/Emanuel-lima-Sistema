@@ -1,0 +1,90 @@
+import { Injectable } from '@nestjs/common';
+import { PrismaService } from '../../prisma/prisma.service';
+
+@Injectable()
+export class ClientsService {
+  constructor(private prisma: PrismaService) {}
+
+  async create(data: {
+    fullName: string;
+    cpf: string;
+    rg?: string;
+    email?: string;
+    phone?: string;
+    profession?: string;
+    maritalStatus?: string;
+    zipCode?: string;
+    street?: string;
+    number?: string;
+    complement?: string;
+    neighborhood?: string;
+    city?: string;
+    state?: string;
+  }) {
+    return this.prisma.client.create({
+      data,
+    });
+  }
+
+  async findAll() {
+    return this.prisma.client.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+
+  async findOne(id: string) {
+    return this.prisma.client.findUnique({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async update(
+    id: string,
+    data: {
+      fullName?: string;
+      cpf?: string;
+      rg?: string;
+      email?: string;
+      phone?: string;
+      profession?: string;
+      maritalStatus?: string;
+      zipCode?: string;
+      street?: string;
+      number?: string;
+      complement?: string;
+      neighborhood?: string;
+      city?: string;
+      state?: string;
+    },
+  ) {
+    return this.prisma.client.update({
+      where: {
+        id,
+      },
+      data,
+    });
+  }
+
+  async remove(id: string) {
+    return this.prisma.client.delete({
+      where: {
+        id,
+      },
+    });
+  }
+
+  async findCasesByClientId(id: string) {
+    return this.prisma.legalCase.findMany({
+      where: {
+        clientId: id,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
+}
